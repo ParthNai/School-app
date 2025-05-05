@@ -33,8 +33,8 @@ class StartupScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.blue.shade900,
-              Colors.blue.shade700,
+              AppTheme.primaryColor,
+              AppTheme.secondaryColor,
             ],
           ),
         ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
 import 'regular_paper_page.dart';
 
 class SubjectDetailsPage extends StatelessWidget {
   final String subjectName;
-  final String subjectIcon;
+  final dynamic subjectIcon;
 
   static final Map<String, List<Map<String, dynamic>>> _subjectChapters = {
     'Social Science': [
@@ -68,32 +69,46 @@ class SubjectDetailsPage extends StatelessWidget {
   Widget _buildOptionCard({
     required String title,
     required String subtitle,
-    required String icon,
+    required IconData icon,
     required VoidCallback onTap,
   }) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 0,
+      elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: AppTheme.primaryColor,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: AppTheme.textColor,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -107,23 +122,86 @@ class SubjectDetailsPage extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
-              Image.asset(
-                'assets/images/$icon',
-                width: 48,
-                height: 48,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.description, color: Colors.grey.shade400),
-                  );
-                },
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: Colors.grey.shade400,
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChapterCard(Map<String, dynamic> chapter) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: chapter['isLocked'] ? 0 : 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: chapter['isLocked']
+            ? BorderSide(color: Colors.grey.shade200)
+            : BorderSide.none,
+      ),
+      child: InkWell(
+        onTap: chapter['isLocked']
+            ? null
+            : () {
+                // Handle chapter selection
+              },
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: chapter['isLocked']
+                      ? Colors.grey.shade100
+                      : AppTheme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    '${chapter['number']}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: chapter['isLocked']
+                          ? Colors.grey.shade400
+                          : AppTheme.primaryColor,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  chapter['title'],
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: chapter['isLocked']
+                        ? Colors.grey.shade400
+                        : AppTheme.textColor,
+                  ),
+                ),
+              ),
+              if (chapter['isLocked'])
+                Icon(
+                  Icons.lock,
+                  size: 18,
+                  color: Colors.grey.shade400,
+                )
+              else
+                Icon(
+                  Icons.check_circle,
+                  size: 18,
+                  color: Colors.green.shade400,
+                ),
             ],
           ),
         ),
@@ -133,105 +211,199 @@ class SubjectDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, dynamic>> chapters =
+        _subjectChapters[subjectName] ?? [];
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        title: Text(subjectName),
+        centerTitle: true,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Center(
-                child: Text(
-                  subjectIcon,
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              subjectName,
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
       ),
-      body: ListView(
+      body: Column(
         children: [
-          const SizedBox(height: 8),
-          _buildOptionCard(
-            title: 'Regular Paper',
-            subtitle: 'Select Question Of Your Choice',
-            icon: 'regular_paper.png',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RegularPaperPage(
-                    subjectName: subjectName,
-                    chapters: _subjectChapters[subjectName] ?? [],
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    _buildSubjectIcon(),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            subjectName,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textColor,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Select paper type or chapter',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _buildOptionCard(
+                  title: 'Regular Paper',
+                  subtitle: 'Create a standard exam paper',
+                  icon: Icons.description,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RegularPaperPage(
+                          subjectName: subjectName,
+                          chapters: _subjectChapters[subjectName] ?? [],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                _buildOptionCard(
+                  title: 'Custom Paper',
+                  subtitle: 'Create a custom exam paper',
+                  icon: Icons.edit_document,
+                  onTap: () {
+                    // Navigate to custom paper page
+                  },
+                ),
+                _buildOptionCard(
+                  title: 'Chapter-wise Paper',
+                  subtitle: 'Create a paper for specific chapters',
+                  icon: Icons.menu_book,
+                  onTap: () {
+                    // Navigate to chapter-wise paper page
+                  },
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Row(
+              children: [
+                Text(
+                  'Chapters',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textColor,
                   ),
                 ),
-              );
-            },
-          ),
-          _buildOptionCard(
-            title: 'Custom Paper',
-            subtitle: 'Create Papers According To Your Blue Print',
-            icon: 'custom_paper.png',
-            onTap: () {},
-          ),
-          _buildOptionCard(
-            title: 'Random Paper',
-            subtitle: 'Just Select No. Of Question & Create Paper',
-            icon: 'random_paper.png',
-            onTap: () {},
-          ),
-          _buildOptionCard(
-            title: 'Expert Mode',
-            subtitle: 'Select From Already Best Papers',
-            icon: 'expert_mode.png',
-            onTap: () {},
-          ),
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text(
-              'Other Services',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${chapters.length}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          _buildOptionCard(
-            title: 'Chapter Note',
-            subtitle: 'Get Study Material, Textbook, Sample papers, Blueprints etc.',
-            icon: 'chapter_note.png',
-            onTap: () {},
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 8, bottom: 100),
+              itemCount: chapters.length,
+              itemBuilder: (context, index) {
+                return _buildChapterCard(chapters[index]);
+              },
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        backgroundColor: Colors.orange,
-        icon: const Icon(Icons.help_outline),
-        label: const Text('How to use ?'),
+        onPressed: () {
+          // Handle paper creation
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Paper created successfully!'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+        backgroundColor: AppTheme.accentColor,
+        label: const Text('Create Paper'),
+        icon: const Icon(Icons.check),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget _buildSubjectIcon() {
+    IconData iconData;
+    
+    // Determine the appropriate icon based on subject name
+    if (subjectIcon is IconData) {
+      iconData = subjectIcon;
+    } else {
+      // Fallback icons based on subject name
+      switch (subjectName) {
+        case 'Social Science':
+          iconData = Icons.public;
+          break;
+        case 'Maths':
+          iconData = Icons.calculate;
+          break;
+        case 'ENGLISH':
+          iconData = Icons.menu_book;
+          break;
+        case 'Science':
+          iconData = Icons.science;
+          break;
+        case 'Gujarati':
+          iconData = Icons.translate;
+          break;
+        case 'Sanskrit':
+          iconData = Icons.history_edu;
+          break;
+        case 'Hindi':
+          iconData = Icons.language;
+          break;
+        case 'Computer':
+          iconData = Icons.computer;
+          break;
+        default:
+          iconData = Icons.school;
+      }
+    }
+    
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: AppTheme.primaryColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Icon(
+        iconData,
+        size: 30,
+        color: AppTheme.primaryColor,
+      ),
     );
   }
 }

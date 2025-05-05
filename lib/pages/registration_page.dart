@@ -13,19 +13,38 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _qualificationController = TextEditingController();
+  final TextEditingController _experienceController = TextEditingController();
   String? _selectedRole;
   bool _isLoading = false;
+  bool _showTeacherFields = false;
 
   @override
   void dispose() {
     _nameController.dispose();
+    _emailController.dispose();
+    _qualificationController.dispose();
+    _experienceController.dispose();
     super.dispose();
   }
 
   void _handleRegistration() {
+    // Basic validation
     if (_nameController.text.isEmpty || _selectedRole == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
+        const SnackBar(content: Text('Please fill all required fields')),
+      );
+      return;
+    }
+    
+    // Additional validation for teacher fields
+    if (_selectedRole == 'Teacher' && (
+        _emailController.text.isEmpty ||
+        _qualificationController.text.isEmpty ||
+        _experienceController.text.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all teacher information fields')),
       );
       return;
     }
@@ -72,6 +91,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       onTap: () {
         setState(() {
           _selectedRole = role;
+          _showTeacherFields = role == 'Teacher';
         });
       },
       child: Column(
@@ -166,14 +186,54 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   color: Colors.grey[100],
                 ),
                 child: TextField(
-                  enabled: false,
-                  controller: TextEditingController(text: widget.phoneNumber),
-                  decoration: const InputDecoration(
+                  enabled: _selectedRole != 'Teacher',
+                  controller: widget.phoneNumber.isNotEmpty 
+                      ? TextEditingController(text: widget.phoneNumber)
+                      : _emailController,
+                  decoration: InputDecoration(
+                    hintText: _selectedRole == 'Teacher' ? 'Email Address' : 'Phone Number',
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
+                  keyboardType: _selectedRole == 'Teacher' ? TextInputType.emailAddress : TextInputType.phone,
                 ),
               ),
+              
+              // Teacher-specific fields
+              if (_showTeacherFields) ...[                
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[100],
+                  ),
+                  child: TextField(
+                    controller: _qualificationController,
+                    decoration: const InputDecoration(
+                      hintText: 'Qualification',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.grey[100],
+                  ),
+                  child: TextField(
+                    controller: _experienceController,
+                    decoration: const InputDecoration(
+                      hintText: 'Years of Experience',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
               const SizedBox(height: 32),
               const Text(
                 'Role',

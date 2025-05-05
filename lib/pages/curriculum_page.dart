@@ -23,19 +23,25 @@ class _CurriculumPageState extends State<CurriculumPage> {
   int _selectedIndex = 0;
 
   final List<Map<String, dynamic>> _subjects = [
-    {'name': 'Social Science', 'icon': 'assets/images/subjects/globe.png'},
-    {'name': 'Maths', 'icon': 'assets/images/subjects/ruler.png'},
-    {'name': 'ENGLISH', 'icon': 'assets/images/subjects/books.png'},
-    {'name': 'Science', 'icon': 'assets/images/subjects/microscope.png'},
-    {'name': 'Gujarati', 'icon': 'assets/images/subjects/book.png'},
-    {'name': 'Sanskrit', 'icon': 'assets/images/subjects/scroll.png'},
-    {'name': 'Hindi', 'icon': 'assets/images/subjects/pencil.png'},
-    {'name': 'Computer', 'icon': 'assets/images/subjects/laptop.png'},
+    {'name': 'Social Science', 'icon': Icons.public},
+    {'name': 'Maths', 'icon': Icons.calculate},
+    {'name': 'ENGLISH', 'icon': Icons.menu_book},
+    {'name': 'Science', 'icon': Icons.science},
+    {'name': 'Gujarati', 'icon': Icons.translate},
+    {'name': 'Sanskrit', 'icon': Icons.history_edu},
+    {'name': 'Hindi', 'icon': Icons.language},
+    {'name': 'Computer', 'icon': Icons.computer},
   ];
 
-  Widget _buildSubjectCard(Map<String, dynamic> subject) {
+  Widget _buildSubjectCard(Map<String, dynamic> subject, int index) {
+    bool isSelected = _selectedIndex == index;
+    
     return InkWell(
       onTap: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+        
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -46,55 +52,72 @@ class _CurriculumPageState extends State<CurriculumPage> {
           ),
         );
       },
-      child: AppAnimations.scaleIn(
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.shade200,
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? AppTheme.primaryColor.withOpacity(0.1) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected 
+                  ? AppTheme.primaryColor.withOpacity(0.2)
+                  : Colors.grey.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: isSelected ? AppTheme.primaryColor : Colors.grey.shade200,
+            width: isSelected ? 2 : 1,
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Image.asset(
-                    subject['icon'],
-                    width: 24,
-                    height: 24,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Icon(
-                        Icons.school,
-                        size: 24,
-                        color: Colors.grey.shade600,
-                      );
-                    },
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: isSelected ? AppTheme.primaryColor.withOpacity(0.2) : AppTheme.backgroundColor,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                subject['icon'],
+                size: 30,
+                color: isSelected ? AppTheme.primaryColor : Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    subject['name'],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isSelected ? AppTheme.primaryColor : AppTheme.textColor,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tap to select questions',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(
-                subject['name'],
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppTheme.textColor,
-                ),
-              ),
-            ],
-          ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: isSelected ? AppTheme.primaryColor : Colors.grey.shade400,
+            ),
+          ],
         ),
       ),
     );
@@ -103,57 +126,131 @@ class _CurriculumPageState extends State<CurriculumPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
-        backgroundColor: AppTheme.backgroundColor,
+        title: const Text('Create a Curriculum'),
+        centerTitle: true,
         elevation: 0,
-        title: AppAnimations.fadeSlideInFromBottom(
-          child: Text(
-            'Curriculum',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: AppTheme.textColor,
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppTheme.primaryColor.withOpacity(0.1),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Create a curriculum',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Select the subjects and capture for the exam paper.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildInfoChip(widget.selectedBoard, Icons.school),
+                    _buildInfoChip(widget.selectedMedium, Icons.language),
+                    _buildInfoChip(widget.selectedStandard, Icons.grade),
+                  ],
+                ),
+              ],
             ),
           ),
-          duration: AppAnimations.fast,
-        ),
-        leading: AppAnimations.scaleIn(
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-          duration: AppAnimations.fast,
-        ),
-        actions: [
-          AppAnimations.scaleIn(
-            child: IconButton(
-              icon: const Icon(Icons.more_vert),
-              onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Text(
+              'Select Subject',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textColor,
+              ),
             ),
-            duration: AppAnimations.fast,
+          ),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 8, bottom: 100),
+              itemCount: _subjects.length,
+              itemBuilder: (context, index) {
+                return _buildSubjectCard(_subjects[index], index);
+              },
+            ),
           ),
         ],
       ),
-      body: Column(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // Handle curriculum creation
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Curriculum created successfully!'),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        },
+        backgroundColor: AppTheme.accentColor,
+        label: const Text('Create Paper'),
+        icon: const Icon(Icons.check),
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
         children: [
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2.5,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: _subjects.length,
-              padding: const EdgeInsets.all(16),
-              itemBuilder: (context, index) {
-                return AppAnimations.fadeSlideInFromBottom(
-                  duration: Duration(milliseconds: 800 + (index * 100)),
-                  child: _buildSubjectCard(_subjects[index]),
-                );
-              },
+          Icon(
+            icon,
+            size: 16,
+            color: AppTheme.primaryColor,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: AppTheme.textColor,
             ),
           ),
         ],

@@ -1,47 +1,85 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color primaryColor = Color(0xFF1E293B);
-  static const Color accentColor = Color(0xFFFF9500);
-  static const Color backgroundColor = Colors.white;
-  static const Color textColor = Color(0xFF2D3142);
-  static const Color subtitleColor = Color(0xFF6B7280);
+  // New vibrant theme colors
+  static const Color primaryColor = Color(0xFF2E86DE); // Bright blue
+  static const Color secondaryColor = Color(0xFF54A0FF); // Light blue accent
+  static const Color accentColor = Color(0xFFFF9F43); // Orange accent
+  static const Color backgroundColor = Color(0xFFF5F9FC); // Light blue-white background
+  static const Color cardColor = Colors.white;
+  static const Color textColor = Color(0xFF2C3E50); // Dark blue-grey
+  static const Color subtitleColor = Color(0xFF7F8C8D); // Medium grey
   
   static final ThemeData theme = ThemeData(
     primaryColor: primaryColor,
+    colorScheme: ColorScheme.light(
+      primary: primaryColor,
+      secondary: secondaryColor,
+      surface: cardColor,
+      background: backgroundColor,
+      error: Colors.red,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      onSurface: textColor,
+      onBackground: textColor,
+      onError: Colors.white,
+      brightness: Brightness.light,
+    ),
     scaffoldBackgroundColor: backgroundColor,
     appBarTheme: const AppBarTheme(
-      backgroundColor: backgroundColor,
+      backgroundColor: primaryColor,
       elevation: 0,
-      iconTheme: IconThemeData(color: textColor),
+      iconTheme: IconThemeData(color: Colors.white),
       titleTextStyle: TextStyle(
-        color: textColor,
+        color: Colors.white,
         fontSize: 20,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
+        backgroundColor: accentColor,
         foregroundColor: Colors.white,
-        elevation: 0,
+        elevation: 2,
+        shadowColor: accentColor.withOpacity(0.4),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(16),
         ),
         padding: const EdgeInsets.symmetric(vertical: 16),
       ),
     ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: primaryColor,
+        textStyle: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+    ),
+    cardTheme: CardTheme(
+      color: cardColor,
+      elevation: 3,
+      shadowColor: Colors.black.withOpacity(0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.grey[100],
+      fillColor: Colors.white,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: primaryColor.withOpacity(0.2), width: 1),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: primaryColor.withOpacity(0.2), width: 1),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: primaryColor, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 16,
+        horizontal: 20,
+        vertical: 18,
       ),
+      hintStyle: TextStyle(color: subtitleColor, fontSize: 16),
     ),
   );
 }

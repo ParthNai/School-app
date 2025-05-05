@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
+import '../theme/app_theme.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -32,21 +33,25 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     image: 'assets/images/todo_illustration/todo.png',
                     title: 'Create a paper like pro',
                     subtitle: 'Easy to use and create anywhere\nwithout any hustle.',
+                    iconFallback: Icons.description,
                   ),
                   _buildOnboardingPage(
                     image: 'assets/images/todo_illustration/curriculum.png',
                     title: 'Create a curriculum',
                     subtitle: 'Select the subjects and capture for the\nexam paper.',
+                    iconFallback: Icons.menu_book,
                   ),
                   _buildOnboardingPage(
                     image: 'assets/images/todo_illustration/questions.png',
                     title: 'Select the questions.',
                     subtitle: 'Choose questions step by step mark\nand type wise.',
+                    iconFallback: Icons.help_outline,
                   ),
                   _buildOnboardingPage(
                     image: 'assets/images/todo_illustration/export.png',
                     title: 'Export & Save Paper.',
                     subtitle: 'Export using the name and watermark for your\norganization, with an additional feature.',
+                    iconFallback: Icons.upload_file,
                   ),
                 ],
               ),
@@ -66,7 +71,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: _currentPage == index
-                              ? Colors.blue
+                              ? AppTheme.primaryColor
                               : Colors.grey.shade300,
                         ),
                       ),
@@ -93,7 +98,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF7F50),
+                        backgroundColor: AppTheme.accentColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(28),
                         ),
@@ -128,16 +133,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
     required String image,
     required String title,
     required String subtitle,
+    IconData iconFallback = Icons.school,
   }) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            image,
-            height: 300,
-          ),
+          _buildImageWithFallback(image, iconFallback, title),
           const SizedBox(height: 48),
           Text(
             title,
@@ -159,6 +162,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildImageWithFallback(String imagePath, IconData fallbackIcon, String title) {
+    return Container(
+      height: 300,
+      child: Center(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: 200,
+            height: 200,
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Icon(
+                fallbackIcon,
+                size: 80,
+                color: AppTheme.primaryColor,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
